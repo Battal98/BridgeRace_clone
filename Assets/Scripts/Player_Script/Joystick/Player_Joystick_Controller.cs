@@ -7,8 +7,10 @@ public class Player_Joystick_Controller : MonoBehaviour
 
     [SerializeField]
     private Joystick _joystick;
+
     [SerializeField]
     private CharacterController _characterController;
+
     [SerializeField]
     private float _turnSpeed;
 
@@ -35,11 +37,19 @@ public class Player_Joystick_Controller : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _movement = new Vector3(InputX, 0, InputZ);
-        _characterController.Move(_movement * _gameManager.PlayerSpeed * Time.deltaTime);
-        Quaternion newDirect = Quaternion.LookRotation(_movement);
-        this.transform.rotation = newDirect;
+        if (GameManager.isGameEnded || !GameManager.isGameStarted)
+        {
+            return;
+        }
+
+        JoystickController();
+
+        #region Gravity Jobs
+
         GravityComp();
+
+        #endregion
+
     }
 
     private void GravityComp()
@@ -47,5 +57,18 @@ public class Player_Joystick_Controller : MonoBehaviour
         _vSpeed -= _gameManager.Gravity * Time.deltaTime;
         _movement.y = _vSpeed;
         _characterController.Move(_movement * Time.deltaTime);
+    }
+
+    private void JoystickController()
+    {
+        _movement = new Vector3(InputX, 0, InputZ);
+        _characterController.Move(_movement * _gameManager.PlayerSpeed * Time.deltaTime);
+
+        if (_movement != Vector3.zero)
+        {
+            Quaternion _newDirect = Quaternion.LookRotation(_movement);
+            this.transform.rotation = _newDirect;
+        }
+
     }
 }
