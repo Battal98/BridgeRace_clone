@@ -24,8 +24,8 @@ public class LevelManager : MonoBehaviour
 
     #region Values: Wave System Level Managment
 
-    [SerializeField]
-    private int _waveCount = 0;
+    public int MaxWaveCount = 1;
+    public int currentWaveCount = 0;
 
     public int PoolSize = 10;
 
@@ -34,56 +34,13 @@ public class LevelManager : MonoBehaviour
     {
         if (instance == null)
             instance = this;
-
     }
 
     private void Start()
     {
         #region Spawn Collectables
 
-        #region Instantiate Collectable Objects
-
-        for (int i = 0; i < Spawners.Count; i++)
-        {
-
-
-            GameObject _collectableObj = Instantiate(Collectables, Spawners[i].transform);
-            _createdCollectables.Add(_collectableObj);
-            _collectableObj.transform.localScale = Vector3.zero;
-            _collectableObj.transform.localPosition = new Vector3(0, _collectableObj.transform.localPosition.y, 0);
-            _collectableObj.transform.DOScale(Vector3.one, 0.5f);
-
-
-        }
-        #endregion
-
-        #region Set Colors
-
-        while (_createdCollectables.Count > 0 )
-        {
-            int _randomCollectableCount = Random.Range(0, _createdCollectables.Count);
-
-            if (RedCount > 0)
-            {
-                SetColorRandomize(CollectableController.ColorState.Red, _randomCollectableCount);
-                RedCount--;
-            }
-            else if (BlueCount > 0)
-            {
-                SetColorRandomize(CollectableController.ColorState.Blue, _randomCollectableCount);
-
-                BlueCount--;
-            }
-            else if (GreenCount > 0)
-            {
-                SetColorRandomize(CollectableController.ColorState.Green, _randomCollectableCount);
-                GreenCount--;
-            }
-            else
-                Debug.Log("Done");
-        }
-
-        #endregion
+        SpawnCollectables();
 
         #endregion
     }
@@ -107,6 +64,49 @@ public class LevelManager : MonoBehaviour
         }
 
         _createdCollectables.RemoveAt(_randomColCount);
+    }
+
+    public void SpawnCollectables()
+    {
+        #region Instantiate Collectable Objects
+
+        for (int i = 0; i < Spawners.Count; i++)
+        {
+            GameObject _collectableObj = Instantiate(Collectables, Spawners[i].transform);
+            _createdCollectables.Add(_collectableObj);
+            _collectableObj.transform.localScale = Vector3.zero;
+            _collectableObj.transform.localPosition = new Vector3(0, _collectableObj.transform.localPosition.y, 0);
+            _collectableObj.transform.DOScale(Vector3.one, 0.5f);
+        }
+        #endregion
+
+        #region Set Colors
+
+        while (_createdCollectables.Count > 0)
+        {
+            int _randomCollectableCount = Random.Range(0, _createdCollectables.Count);
+
+            if (RedCount > 0)
+            {
+                SetColorRandomize(CollectableController.ColorState.Red, _randomCollectableCount);
+                RedCount--;
+            }
+            else if (BlueCount > 0)
+            {
+                SetColorRandomize(CollectableController.ColorState.Blue, _randomCollectableCount);
+                BlueCount--;
+            }
+            else if (GreenCount > 0)
+            {
+                SetColorRandomize(CollectableController.ColorState.Green, _randomCollectableCount);
+                GreenCount--;
+            }
+            else
+                Debug.Log("Done");
+        }
+
+        #endregion
+
     }
 
 }

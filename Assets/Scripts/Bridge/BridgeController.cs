@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using DG.Tweening;
 
 public class BridgeController : MonoBehaviour
 {
@@ -26,11 +27,24 @@ public class BridgeController : MonoBehaviour
     [SerializeField]
     private GameObject _playerHolder;
 
+    #region Wave is Finished Jobs
+
+    [SerializeField]
+    private GameObject _wall;
+    private Collider _wallCollider;
+    [SerializeField]
+    private Transform _playerTargetPos;
+
+    #endregion
+
+
     private void Start()
     {
         #region Walking Path Pool
 
-        _poolSize = LevelManager.instance.PoolSize;
+        _wallCollider = _wall.GetComponent<Collider>();
+        _wallCollider.isTrigger = true;
+
         PathPool();
 
         #endregion
@@ -53,7 +67,7 @@ public class BridgeController : MonoBehaviour
 
         #endregion
 
-        if (_stackControl.CollectedList.Count > 0 && _poolList.Count > 0)
+        if (_stackControl.CollectedList.Count > 0 && _poolList.Count > 0) // check ayarla
         {
             if (_decreaseCount >= 0 && _decreaseCount <= _stackControl.CollectedList.Count -1 )
             {
@@ -62,7 +76,6 @@ public class BridgeController : MonoBehaviour
                 _stackControl.CollectedList[_decreaseCount].transform.position = _stackControl.CollectableRespawnList[_decreaseCount];
                 _stackControl.CollectedList[_decreaseCount].transform.parent = null;
                 _stackControl.CollectedList[_decreaseCount].GetComponent<BoxCollider>().enabled = true;
-                _stackControl.CollectedList[_decreaseCount].GetComponent<TrailRenderer>().enabled = false;
                 _stackControl.ResetPathEndValue();
                 _stackControl.CollectableRespawnList.RemoveAt(_decreaseCount);
                 _stackControl.CollectedList.RemoveAt(_decreaseCount);
@@ -90,11 +103,28 @@ public class BridgeController : MonoBehaviour
 
             }
         }
+        
+        else
+        {
+            //Wave is finished
+            if (LevelManager.instance.currentWaveCount < LevelManager.instance.MaxWaveCount)
+            {
+                _playerHolder.transform.position = Vector3.zero;
+                GameManager.instance.Player.transform.DOLocalMove(_playerTargetPos.position, 0.3f).OnComplete(() => _wallCollider.isTrigger = false);
+                LevelManager.instance.currentWaveCount++;
+            }
+
+            if (LevelManager.instance.currentWaveCount == LevelManager.instance.MaxWaveCount)
+            {
+                GameManager.instance.OnLevelCompleted();
+            }
+
+        }
     }
 
     private void PathPool()
     {
-
+        _poolSize = LevelManager.instance.PoolSize;
         for (int i = 0; i < _poolSize; i++)
         {
             GameObject _createdObj = Instantiate(_creatableObj);
@@ -115,7 +145,6 @@ public class BridgeController : MonoBehaviour
     {
         PlayerOnCollision.Instance.SetPath += SetPathFunc;
     }
-
 
     private void RemoveEvents()
     {

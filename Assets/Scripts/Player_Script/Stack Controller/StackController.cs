@@ -78,7 +78,11 @@ public class StackController : MonoBehaviour
 
         #region Collectable Obj Movements
 
-        _pickupObject.transform.DOLocalPath(_collectablePath, 0.2f, PathType.CatmullRom).OnComplete(() => _pickupObject.transform.localRotation = Quaternion.Euler(Vector3.zero)) ;
+        _pickupObject.transform.DOLocalPath(_collectablePath, 0.2f, PathType.CatmullRom).OnComplete(() =>
+        {
+            _pickupObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            _pickupObject.gameObject.GetComponent<TrailRenderer>().enabled = false;
+        }) ;
 
         #endregion
 

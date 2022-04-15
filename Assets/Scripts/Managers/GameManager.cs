@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour
 
     public void OnLevelCompleted()
     {
-        StartCoroutine(WaitForFinish(2f));
+        StartCoroutine(WaitForFinish(0.5f));
     }
     //if Level Failed
     public void OnLevelFailed()
