@@ -19,10 +19,17 @@ public class LevelManager : MonoBehaviour
     private int RedCount, BlueCount, GreenCount;
 
     [SerializeField]
-    private List<GameObject> _createdCollectables = new List<GameObject>(); 
+    private List<GameObject> _createdCollectables = new List<GameObject>();
     #endregion
 
+    #region Values: Wave System Level Managment
 
+    [SerializeField]
+    private int _waveCount = 0;
+
+    public int PoolSize = 10;
+
+    #endregion
     private void Awake()
     {
         if (instance == null)
@@ -91,7 +98,7 @@ public class LevelManager : MonoBehaviour
     {
 
         CollectableController _collectableController = _createdCollectables[_randomColCount].gameObject.GetComponent<CollectableController>();
-        _collectableController._colorState = _colorState;
+        _collectableController.ColorStates = _colorState;
         _collectableController.SetColors();
 
         if (_colorState != CollectableController.ColorState.Blue)

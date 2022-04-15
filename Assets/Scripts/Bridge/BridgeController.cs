@@ -30,6 +30,7 @@ public class BridgeController : MonoBehaviour
     {
         #region Walking Path Pool
 
+        _poolSize = LevelManager.instance.PoolSize;
         PathPool();
 
         #endregion

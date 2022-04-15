@@ -27,7 +27,7 @@ public class PlayerOnCollision : MonoBehaviour
         if (hit.gameObject.CompareTag("Collectables"))
         {
             CollectableController _colController = hit.gameObject.GetComponent<CollectableController>();
-            if (_colController._colorState == CollectableController.ColorState.Blue)
+            if (_colController.ColorStates == CollectableController.ColorState.Blue)
             {
                 var _pickUpData = new PickUpEvents { PickUpEvent = hit.gameObject };
                 PickUp?.Invoke(this, _pickUpData);
