@@ -7,29 +7,40 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance;
 
+    #region SpawnSystem
+
     [SerializeField]
     private GameObject Collectables;
 
-    [SerializeField]
-    private List<GameObject> Spawners = new List<GameObject>();
+    [System.Serializable]
+    public class SpawnSystem
+    {
+        public List<GameObject> Spawners = new List<GameObject>();
+    }
+
+    public List<SpawnSystem> SpawnSystems;
+
+    #endregion
 
     #region Values: For Set Colors
 
     [SerializeField]
     private int RedCount, BlueCount, GreenCount;
 
+    private int defRedCount, defBlueCount, defGreenCount;
+
     [SerializeField]
-    private List<GameObject> _createdCollectables = new List<GameObject>();
+    public List<GameObject> _createdCollectables = new List<GameObject>();
     #endregion
 
     #region Values: Wave System Level Managment
 
     public int MaxWaveCount = 1;
     public int currentWaveCount = 0;
-
     public int PoolSize = 10;
 
     #endregion
+
     private void Awake()
     {
         if (instance == null)
@@ -38,6 +49,9 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
+
+        Init();
+
         #region Spawn Collectables
 
         SpawnCollectables();
@@ -45,6 +59,12 @@ public class LevelManager : MonoBehaviour
         #endregion
     }
 
+    private void Init()
+    {
+        defRedCount = RedCount;
+        defGreenCount = GreenCount;
+        defBlueCount = BlueCount;
+    }
 
     /// <summary>
     /// Set Color in Random spawners for collectable
@@ -70,39 +90,56 @@ public class LevelManager : MonoBehaviour
     {
         #region Instantiate Collectable Objects
 
-        for (int i = 0; i < Spawners.Count; i++)
+        if (SpawnSystems[currentWaveCount] != null)
         {
-            GameObject _collectableObj = Instantiate(Collectables, Spawners[i].transform);
-            _createdCollectables.Add(_collectableObj);
-            _collectableObj.transform.localScale = Vector3.zero;
-            _collectableObj.transform.localPosition = new Vector3(0, _collectableObj.transform.localPosition.y, 0);
-            _collectableObj.transform.DOScale(Vector3.one, 0.5f);
+            for (int i = 0; i < SpawnSystems[currentWaveCount].Spawners.Count; i++)
+            {
+                GameObject _collectableObj = Instantiate(Collectables, SpawnSystems[currentWaveCount].Spawners[i].transform);
+                _createdCollectables.Add(_collectableObj);
+                _collectableObj.transform.localScale = Vector3.zero;
+                _collectableObj.transform.localPosition = new Vector3(0, _collectableObj.transform.localPosition.y, 0);
+                _collectableObj.transform.DOScale(Vector3.one, 0.5f);
+            }
         }
+
         #endregion
 
         #region Set Colors
 
-        while (_createdCollectables.Count > 0)
+        if (SpawnSystems[currentWaveCount] != null)
         {
-            int _randomCollectableCount = Random.Range(0, _createdCollectables.Count);
+            while (_createdCollectables.Count > 0)
+            {
+                int _randomCollectableCount = Random.Range(0, _createdCollectables.Count);
 
-            if (RedCount > 0)
-            {
-                SetColorRandomize(CollectableController.ColorState.Red, _randomCollectableCount);
-                RedCount--;
+                if (RedCount > 0)
+                {
+                    SetColorRandomize(CollectableController.ColorState.Red, _randomCollectableCount);
+                    RedCount--;
+                }
+                else if (BlueCount > 0)
+                {
+                    SetColorRandomize(CollectableController.ColorState.Blue, _randomCollectableCount);
+                    BlueCount--;
+                }
+                else if (GreenCount > 0)
+                {
+                    SetColorRandomize(CollectableController.ColorState.Green, _randomCollectableCount);
+                    GreenCount--;
+                }
+                else
+                {
+                    RedCount = defRedCount;
+                    GreenCount = defGreenCount;
+                    BlueCount = defBlueCount;
+                    Debug.Log("Done 1");
+                }
             }
-            else if (BlueCount > 0)
-            {
-                SetColorRandomize(CollectableController.ColorState.Blue, _randomCollectableCount);
-                BlueCount--;
-            }
-            else if (GreenCount > 0)
-            {
-                SetColorRandomize(CollectableController.ColorState.Green, _randomCollectableCount);
-                GreenCount--;
-            }
-            else
-                Debug.Log("Done");
+
+            RedCount = defRedCount;
+            GreenCount = defGreenCount;
+            BlueCount = defBlueCount;
+            Debug.Log("Done 2");
         }
 
         #endregion

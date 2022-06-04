@@ -10,7 +10,6 @@ public class PlayerOnCollision : MonoBehaviour
     #region Events 
 
     public event EventHandler<PickUpEvents> PickUp;
-    public event EventHandler<SetUpEvents> SetPath;
 
     #endregion
 
@@ -39,8 +38,11 @@ public class PlayerOnCollision : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Holder"))
         {
-            var _setupData = new SetUpEvents { SetPathEvents = other.gameObject };
-            SetPath?.Invoke(this, _setupData);
+            BridgeController _bridgeController = other.gameObject.transform.GetComponentInParent<BridgeController>();
+            if (_bridgeController)
+            {
+                _bridgeController.SetupBridgePath();
+            }
         }
     }
 }

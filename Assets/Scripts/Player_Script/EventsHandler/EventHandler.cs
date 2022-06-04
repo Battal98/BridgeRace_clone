@@ -9,7 +9,3 @@ public class PickUpEvents : EventArgs
 
 }
 
-public class SetUpEvents : EventArgs 
-{ 
-    public GameObject SetPathEvents { get; set;}
-}

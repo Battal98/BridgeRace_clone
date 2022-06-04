@@ -6,21 +6,29 @@ public class StackController : MonoBehaviour
 {
 
     [SerializeField]
-    private List<Transform> _collectablePathTarget = new List<Transform>(); // Path Targets
+    private List<Transform> _collectableCollectPathTarget = new List<Transform>(); // Collect Path Targets
+    [SerializeField]
+    private List<Transform> _collectableSetupPathTarget = new List<Transform>(); // Set up Path Targets
 
     public List<GameObject> CollectedList;
     public List<Vector3> CollectableRespawnList;
 
-    private Vector3[] _collectablePath = new Vector3[2]; // Path Target Array
-
+    private Vector3[] _collectableCollectPath = new Vector3[2]; // Path Target Array
+    //[HideInInspector]
+    public Vector3[] CollectableSetupPath = new Vector3[2]; // Path Target Array
 
     private void Start()
     {
-        #region Set Collectable Collecting Path 
+        #region Set Collectable Collecting & Setup Path 
 
-        for (int i = 0; i < _collectablePathTarget.Count - 1; i++)
+        for (int i = 0; i < _collectableCollectPathTarget.Count - 1; i++)
         {
-            _collectablePath[i] = _collectablePathTarget[i].localPosition;
+            _collectableCollectPath[i] = _collectableCollectPathTarget[i].localPosition;
+        }
+
+        for (int i = 0; i < _collectableSetupPathTarget.Count - 1; i++)
+        {
+            CollectableSetupPath[i] = _collectableSetupPathTarget[i].localPosition;
         }
 
         #endregion
@@ -52,19 +60,19 @@ public class StackController : MonoBehaviour
         if (CollectedList.Count % 2 == 0)
         {
             //right
-            _collectablePath[0] = _collectablePathTarget[0].localPosition;
+            _collectableCollectPath[0] = _collectableCollectPathTarget[0].localPosition;
         }
         else
         {
             //left
-            _collectablePath[0] = _collectablePathTarget[2].localPosition;
+            _collectableCollectPath[0] = _collectableCollectPathTarget[2].localPosition;
         }
 
         #endregion
 
         #region Increase Collectable End Value
 
-        _collectablePath[1] += new Vector3(0, 0.2f, 0);
+        _collectableCollectPath[1] += new Vector3(0, 0.2f, 0);
 
         #endregion
 
@@ -78,7 +86,7 @@ public class StackController : MonoBehaviour
 
         #region Collectable Obj Movements
 
-        _pickupObject.transform.DOLocalPath(_collectablePath, 0.2f, PathType.CatmullRom).OnComplete(() =>
+        _pickupObject.transform.DOLocalPath(_collectableCollectPath, 0.2f, PathType.CatmullRom).OnComplete(() =>
         {
             _pickupObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
             _pickupObject.gameObject.GetComponent<TrailRenderer>().enabled = false;
@@ -90,7 +98,7 @@ public class StackController : MonoBehaviour
 
     public void ResetPathEndValue()
     {
-        _collectablePath[1] -= new Vector3(0, 0.2f, 0);
+        _collectableCollectPath[1] -= new Vector3(0, 0.2f, 0);
     }
 
     private void AddEvents()

@@ -35,13 +35,13 @@ public class GameManager : MonoBehaviour
 
     public int levelCount = 0;
     public int nextLevel = 0;
-    private Volume volume;
+    private Volume _volume;
 
     private void Awake()
     {
         if (instance == null)
             instance = this;
-        volume = this.GetComponent<Volume>();
+        _volume = this.GetComponent<Volume>();
     }
 
     private IEnumerator Start()
@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
         if (isGameRestarted)
         {
             UIManager.instance.MainMenu.SetActive(false);
-            volume.enabled = false;
+            _volume.enabled = false;
         }
         levelCount = PlayerPrefs.GetInt("levelCount", levelCount);
         nextLevel = PlayerPrefs.GetInt("nextLevel", nextLevel);
@@ -79,15 +79,19 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) && isGameEnded)
+        if (Input.GetMouseButtonDown(0) && isGameEnded && !isGameStarted)
         {
             UIManager.instance.MainMenu.SetActive(false);
             UIManager.instance.GameMenu.SetActive(true);
-            volume.enabled = false;
+            _volume.enabled = false;
             isGameStarted = true;
             isGameEnded = false;
         }
 
+    }
+    public void OnLevelStopped()
+    {
+        isGameEnded = true;
     }
 
     public void OnLevelCompleted()
@@ -101,7 +105,7 @@ public class GameManager : MonoBehaviour
         UIManager.instance.LoseMenu.SetActive(true);
         UIManager.instance.GameMenu.SetActive(false);
         isGameEnded = true;
-        volume.enabled = true;
+        _volume.enabled = true;
         isGameStarted = false;
     }
 
@@ -132,6 +136,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(_waitTime);
         UIManager.instance.WinMenu.SetActive(true);
         UIManager.instance.GameMenu.SetActive(false);
-        volume.enabled = true;
+        _volume.enabled = true;
     }
 }
